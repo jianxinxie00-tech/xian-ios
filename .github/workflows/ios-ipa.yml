@@ -1,0 +1,85 @@
+name: Build iOS IPA (unsigned)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-ios:
+    runs-on: macos-15
+    timeout-minutes: 40
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install project toolchain and locked dependencies
+        uses: ./.github/actions/setup-vp-install
+      - name: Check source and run tests
+        run: |
+          vp check
+          bun run check
+          bun run test
+      - name: Build bundled offline game
+        run: bun run build
+      - name: Generate iOS project
+        run: |
+          bunx --no-install cap add ios --packagemanager SPM
+          python3 scripts/configure-ios.py
+          sips -z 1024 1024 public/icons/icon-512.png --out ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
+          bunx --no-install cap sync ios
+      - name: Build ARM64 device application without signing
+        run: |
+          set -o pipefail
+          mkdir -p build/ios
+          VERSION=$(node -p "require('./package.json').version")
+          xcodebuild -version
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/ios/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            ARCHS=arm64 \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            build 2>&1 | tee build/ios/xcodebuild.log
+      - name: Validate and package IPA
+        run: |
+          set -euo pipefail
+          APP=build/ios/DerivedData/Build/Products/Release-iphoneos/App.app
+          test -s "$APP/App"
+          test -s "$APP/public/index.html"
+          test -s "$APP/PrivacyInfo.xcprivacy"
+          file "$APP/App" | grep -q arm64
+          /usr/libexec/PlistBuddy -c 'Print :UIFileSharingEnabled' "$APP/Info.plist" | grep -q true
+          /usr/libexec/PlistBuddy -c 'Print :LSSupportsOpeningDocumentsInPlace' "$APP/Info.plist" | grep -q true
+          VERSION=$(node -p "require('./package.json').version")
+          mkdir -p build/ios/package/Payload
+          ditto "$APP" build/ios/package/Payload/App.app
+          (cd build/ios/package && zip -qry "../xuanshu-${VERSION}-unsigned.ipa" Payload)
+          unzip -t "build/ios/xuanshu-${VERSION}-unsigned.ipa"
+          shasum -a 256 "build/ios/xuanshu-${VERSION}-unsigned.ipa" > build/ios/SHA256SUMS.txt
+          printf 'Source commit: %s\nBuild: %s\nUnsigned ARM64 iOS IPA. Sign before installing.\n' "$GITHUB_SHA" "$GITHUB_RUN_NUMBER" > build/ios/BUILD-INFO.txt
+          echo 'IPA built successfully. Download the artifact and sign the .ipa before installing.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: xuanshu-ios-unsigned
+          path: |
+            build/ios/*.ipa
+            build/ios/SHA256SUMS.txt
+            build/ios/BUILD-INFO.txt
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: ios-build-log
+          path: build/ios/xcodebuild.log
+          if-no-files-found: ignore

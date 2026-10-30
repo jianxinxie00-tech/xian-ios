@@ -41,7 +41,8 @@ function specFiles(dir: string, out: string[] = []): string[] {
     if (name === "node_modules" || name === "dist" || name.startsWith(".")) continue;
     const full = join(dir, name);
     if (statSync(full).isDirectory()) specFiles(full, out);
-    else if (name.endsWith(".spec.ts") && full.slice(ROOT.length + 1) !== SELF) out.push(full);
+    else if (name.endsWith(".spec.ts") && full.slice(ROOT.length + 1).replace(/\\/g, "/") !== SELF)
+      out.push(full);
   }
   return out;
 }

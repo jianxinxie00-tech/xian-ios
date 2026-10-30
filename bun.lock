@@ -9,6 +9,7 @@
         "@capacitor/app": "^8.1.2",
         "@capacitor/core": "^8.5.3",
         "@capacitor/filesystem": "^8.1.5",
+        "@capacitor/ios": "8.5.3",
         "crypto-js": "^4.2.0",
         "file-saver": "^2.0.5",
         "pinia": "^3.0.4",
@@ -92,6 +93,8 @@
     "@capacitor/core": ["@capacitor/core@8.5.3", "https://registry.npmmirror.com/@capacitor/core/-/core-8.5.3.tgz", { "dependencies": { "tslib": "^2.1.0" } }, "sha512-oBE1oGuYE4ZzYYrulC75OuHdSsD6zLUy7d5o1tFwDLG4govGoubY15cxpiI5l0+q87Lm5p0bhbehMdzJg4aFag=="],
 
     "@capacitor/filesystem": ["@capacitor/filesystem@8.1.5", "https://registry.npmmirror.com/@capacitor/filesystem/-/filesystem-8.1.5.tgz", { "dependencies": { "@capacitor/synapse": "^1.0.4" }, "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-m1RkI8L83NJeppEKyRWioK3MDp2vjlA+QfUQcF8/xRlcXNC2HYxqoyYJ+K4M0EcVovy+g+4F24S05+bhK4Vgdg=="],
+
+    "@capacitor/ios": ["@capacitor/ios@8.5.3", "https://registry.npmmirror.com/@capacitor/ios/-/ios-8.5.3.tgz", { "peerDependencies": { "@capacitor/core": "^8.5.0" } }, "sha512-HnnV92Jl8+3x0JUloXUMjFcUsQI8wHFVsKwkLn72DfRZXYGZW11tQbmNOWOnRTljaU18FdI1b9ipT09SzzPDNw=="],
 
     "@capacitor/synapse": ["@capacitor/synapse@1.0.4", "https://registry.npmmirror.com/@capacitor/synapse/-/synapse-1.0.4.tgz", {}, "sha512-/C1FUo8/OkKuAT4nCIu/34ny9siNHr9qtFezu4kxm6GY1wNFxrCFWjfYx5C1tUhVGz3fxBABegupkpjXvjCHrw=="],
 

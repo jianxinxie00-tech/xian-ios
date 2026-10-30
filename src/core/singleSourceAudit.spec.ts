@@ -170,7 +170,7 @@ describe("同源审计 · 丹药获得", () => {
       .map(
         (file) =>
           [
-            file.slice(SRC.length + 1),
+            file.slice(SRC.length + 1).replace(/\\/g, "/"),
             readFileSync(file, "utf8")
               .replace(/\/\*[\s\S]*?\*\//g, "")
               .replace(/\/\/.*$/gm, ""),
@@ -202,7 +202,7 @@ describe("同源审计 · 功法习得", () => {
       .map(
         (file) =>
           [
-            file.slice(SRC.length + 1),
+            file.slice(SRC.length + 1).replace(/\\/g, "/"),
             readFileSync(file, "utf8")
               .replace(/\/\*[\s\S]*?\*\//g, "")
               .replace(/\/\/.*$/gm, ""),
@@ -237,7 +237,7 @@ describe("同源审计 · 装备获得", () => {
       .map(
         (file) =>
           [
-            file.slice(SRC.length + 1),
+            file.slice(SRC.length + 1).replace(/\\/g, "/"),
             readFileSync(file, "utf8")
               .replace(/\/\*[\s\S]*?\*\//g, "")
               .replace(/\/\/.*$/gm, ""),

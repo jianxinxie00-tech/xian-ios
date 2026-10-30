@@ -42,6 +42,7 @@
     "@capacitor/app": "^8.1.2",
     "@capacitor/core": "^8.5.3",
     "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/ios": "8.5.3",
     "crypto-js": "^4.2.0",
     "file-saver": "^2.0.5",
     "pinia": "^3.0.4",
